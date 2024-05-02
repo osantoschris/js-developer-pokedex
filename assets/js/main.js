@@ -1,8 +1,8 @@
-const pokemonList = document.getElementById('pokemonList')
-const loadMoreButton = document.getElementById('loadMoreButton')
+const pokemonList = document.getElementById('pokemonList');
+const loadMoreButton = document.getElementById('loadMoreButton');
 
-const maxRecords = 151
-const limit = 10
+const maxRecords = 151;
+const limit = 10;
 let offset = 0;
 
 function convertPokemonToLi(pokemon) {
@@ -16,21 +16,20 @@ function convertPokemonToLi(pokemon) {
                     ${pokemon.types.map((type) => `<li class="type ${type}">${type}</li>`).join('')}
                 </ol>
 
-                <img src="${pokemon.photo}"
-                     alt="${pokemon.name}">
+                <img src="${pokemon.photo}" alt="${pokemon.name}">
             </div>
         </li>
     `
-}
+};
 
 function loadPokemonItens(offset, limit) {
     pokeApi.getPokemons(offset, limit).then((pokemons = []) => {
         const newHtml = pokemons.map(convertPokemonToLi).join('')
         pokemonList.innerHTML += newHtml
     })
-}
+};
 
-loadPokemonItens(offset, limit)
+loadPokemonItens(offset, limit);
 
 loadMoreButton.addEventListener('click', () => {
     offset += limit
@@ -44,4 +43,20 @@ loadMoreButton.addEventListener('click', () => {
     } else {
         loadPokemonItens(offset, limit)
     }
-})
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    var pokemonList = document.getElementById('pokemonList');
+
+    pokemonList.addEventListener('click', (e) => {
+        // console.log(e);
+        if (e.target.tagName === 'IMG'){
+            
+            let pokeName = e.target.alt;
+
+            if (pokeName) {
+                window.location.href = `pagina-pokemon.html?pokemon=${encodeURIComponent(pokeName)}`
+            }
+        }
+    });
+});
