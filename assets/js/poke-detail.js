@@ -1,32 +1,49 @@
+const listPokemonDetails = document.getElementById('details');
 const pokeDetails = {}
 
-function convertStats(statsDetail) {
+document.addEventListener('DOMContentLoaded', () => {
+    function getParams(namePokemon) {
+        const urlParamns = new URLSearchParams(window.location.search);
+        return urlParamns.get(namePokemon);
+    }
+    const valueParam = getParams('pokemon');
+    document.title = `Detalhes - ${valueParam}`
+
+    pokeDetails.getDetails(valueParam).then((details = []) => {
+        const newHtml = details.map(convertPokeApiDetailToDetail).join('')
+        listPokemonDetails.innerHTML += newHtml
+    })
+});
+
+function convertPokeApiDetailToDetail(pokeDetail) {
     const detail = new Detail()
-    detail.name = statsDetail.stat.name
-    detail.value = statsDetail.base_stat
+    
+    const details = detail.stats.map((stat) => stat)
+    const [detalhe] = details
 
     return detail
+    
 }
 
-function getDetail(nameTarget) {
-    const url = `https://pokeapi.co/api/v2/pokemon/${nameTarget}`
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao obter os dados')
-            }
-            return response.json();
-        })
-        .then(pokemonData => {
-            const stats = pokemonData.stats;
-            console.log(stats);
-            stats.forEach(stat => {
-                let statName = stat.stat.name;
-                let statValue = stat.base_stat;
-                console.log(`${statName}: ${statValue}`)
-            });
-        })
-        .catch(error => {
-            console.error('Erro:', error.message);
-        });
+function convertDetailToLi(details) {
+    return `
+        <li>
+            <ol>
+                ${details.stats.map((stat) => `<li>${stat}</li>`).join('')}
+            </ol>
+        </li>
+    `
+}
+
+// function loadPokeMonDetails() {
+//     pokeDetails.getDetails(valueParam).then((details = []) => {
+//         const newHtml = details.map(convertDetailToLi).join('')
+//         listPokemonDetails.innerHTML += newHtml
+//     })
+// };
+
+pokeDetails.getDetails = async (namePokemon) => {
+    const url = `https://pokeapi.co/api/v2/pokemon/${namePokemon}`
+    return await fetch(url)
+        .then((response) => response.json())
 }

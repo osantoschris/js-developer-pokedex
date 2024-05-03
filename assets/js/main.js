@@ -46,7 +46,7 @@ loadMoreButton.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    var pokemonList = document.getElementById('pokemonList');
+    let pokemonList = document.getElementById('pokemonList');
 
     pokemonList.addEventListener('click', (e) => {
         // console.log(e);
