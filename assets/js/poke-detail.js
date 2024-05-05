@@ -1,28 +1,41 @@
 const listPokemonDetails = document.getElementById('details');
 const pokeDetails = {}
 
-document.addEventListener('DOMContentLoaded', () => {
-    function getParams(namePokemon) {
-        const urlParamns = new URLSearchParams(window.location.search);
-        return urlParamns.get(namePokemon);
-    }
-    const valueParam = getParams('pokemon');
-    document.title = `Detalhes - ${valueParam}`
+function getParams(namePokemon) {
+    const urlParamns = new URLSearchParams(window.location.search);
+    return urlParamns.get(namePokemon);
+}
 
-    pokeDetails.getDetails(valueParam).then((details = []) => {
-        const newHtml = details.map(convertPokeApiDetailToDetail).join('')
-        listPokemonDetails.innerHTML += newHtml
-    })
-});
+const pokeName = getParams('pokemon');
 
-function convertPokeApiDetailToDetail(pokeDetail) {
-    const detail = new Detail()
+pokeDetails.getDetail = (pokeName) => {
+    const url = `https://pokeapi.co/api/v2/pokemon/${pokeName}`
     
-    const details = detail.stats.map((stat) => stat)
-    const [detalhe] = details
+    return fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`)
+            }
+            return response.json();
+        })
+        .then((pokemonData) => {
+            const detalhesPokemon = {
+                name: pokemonData.name,
+                height: pokemonData.height,
+                weight: pokemonData.weight,
+                abilities: pokemonData.abilities.map((ability) => ability.ability.name),
+            }
+            return detalhesPokemon;
+        })
+}
 
-    return detail
-    
+function convert(detalhe) {
+    const detalhes = new Detalhes()
+    detalhes.name = detalhe.name
+    detalhes.altura = detalhe.height
+    detalhes.peso = detalhe.weight
+
+    return detalhes
 }
 
 function convertDetailToLi(details) {
@@ -33,17 +46,11 @@ function convertDetailToLi(details) {
             </ol>
         </li>
     `
-}
+};
 
-// function loadPokeMonDetails() {
-//     pokeDetails.getDetails(valueParam).then((details = []) => {
-//         const newHtml = details.map(convertDetailToLi).join('')
-//         listPokemonDetails.innerHTML += newHtml
-//     })
-// };
-
-pokeDetails.getDetails = async (namePokemon) => {
-    const url = `https://pokeapi.co/api/v2/pokemon/${namePokemon}`
-    return await fetch(url)
-        .then((response) => response.json())
-}
+function loadDetail(pokeName) {
+    pokeDetails.getDetail(pokeName).then((detalhes = []) => {
+        const newHtml = detalhes.map(convertDetailToLi).join('')
+        listPokemonDetails.innerHTML += newHtml
+    })
+};
